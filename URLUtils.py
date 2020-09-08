@@ -3,13 +3,20 @@
 Приложенние позволяет спарсить n-ное количество изображений по url.
 Модификации файла ускоряют обработку данных на 80 процентов в среднем.
 Данный эффект экономии времени обусловлен разделением потоков исполнения.
+Пакет исполняемый
 """
 
 import requests
 from bs4 import BeautifulSoup
 from urllib.request import *
 import os
+import logging
 
+log = logging.getLogger(__name__)
+
+logging.basicConfig(level=logging.INFO)
+
+url = 'https://pg.brandquad.ru/png/ede7c57abbb3991f1ad84e5c3e5bd38a/'
 
 
 def get_Inputs():
@@ -20,12 +27,16 @@ def get_Inputs():
 наименование которого было указано при запуске.
     :return: список данных проставленных в очередь
     """
-    with open("{}\\{}.txt".format(directoryPath, file_Name)) as f:
+    log.debug("Запущена функция get_Inputs")
+    with open("{}\\{}.txt".format(os.getcwd(), "links")) as f:
+        log.debug('открыт файл для чтения')
         lst_poz_in_file = []
         for i in f:
+            log.debug(f'{i}')
             lst_poz_in_file.append(i.split("\n")[0])
-        print("В очереди {} запросов".format(len(lst_poz_in_file)))
+        # Label3["text"] = "В очереди {} запросов".format(len(lst_poz_in_file))
         return lst_poz_in_file
+
 
 def get_html(url) -> str:
     """
@@ -34,8 +45,11 @@ def get_html(url) -> str:
     :param url: входящая ссылка для запроса
     :return: данные в формате html
     """
+    log.debug('Запущена функция get_html')
     reg = requests.get(url)
+    log.debug(f'Status code: {reg.status_code}, text: {reg.text}')
     return str(reg.text)
+
 
 def main_Func():
     """
@@ -46,30 +60,22 @@ def main_Func():
     while True:
         lst = get_Inputs()
         for link in lst:
+            log.debug(f'{link}')
             html = get_html("{}{}/".format(url, link))
             soup = BeautifulSoup(html, 'html.parser')
             try:
                 image = soup.find(id='js-cover-preview')['src']
                 urlretrieve(image, link + '.jpeg')
-                print("Файл с кодом {} обработан и загружен".format(link))
+                # Label3["text"] = ("Файл с кодом {} обработан и загружен".format(link))
             except:
-                print("Файл {} не обработан\n".format(link))
-                with open("{}fallen.txt".format(directoryPath), 'a') as falen:
+                # Label3["text"] = ("Файл {} не обработан\n".format(link))
+                with open("{}fallen.txt".format(os.getcwd()), 'a') as falen:
                     falen.write("Файл {} не обработан\n".format(link))
                 continue
             else:
                 continue
         break
 
+
 if __name__ == "__main__":
-    url = 'https://pg.brandquad.ru/png/ede7c57abbb3991f1ad84e5c3e5bd38a/'
-    directoryPath = input(":")  # тут был input()
-    if directoryPath == "": directoryPath = "{}\\".format(os.getcwd())
-    file_Name = input(":")  # тут был input()
-    while True:
-        if os.path.exists("{}\\{}.txt".format(directoryPath, file_Name)):
-            break
-        else:
-            continue
-    main_Func()
-    print("Loading complete")
+    pass
