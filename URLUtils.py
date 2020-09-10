@@ -67,12 +67,14 @@ def main_Func(file):
                 print("Файл с кодом {} обработан и загружен".format(link))
             except:
                 print("Файл {} не обработан\n".format(link))
-                with open("{}fallen.txt".format(os.getcwd()), 'a') as falen:
-                    falen.write("Файл {} не обработан\n".format(link))
+                with open("{}\\fallen.txt".format(os.getcwd()), 'a') as fallen:
+                    fallen.write("Файл {} не обработан\n".format(link))
                 continue
             else:
                 continue
+        print("Loading complete")
         break
+
 
 
 if __name__ == "__main__":
